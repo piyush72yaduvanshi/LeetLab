@@ -5,6 +5,7 @@ import cors from "cors";
 
 import authRoutes from "./routes/auth.routes.js";
 import problemRoutes from "./routes/problem.routes.js";
+import executionRoute from './routes/executeCode.routes.js';
 dotenv.config();
 
 const app = express();
@@ -24,6 +25,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/problems", problemRoutes);
+app.use("/api/v1/execute-code" ,executionRoute);
 
 const port = process.env.PORT || 8080;
 
