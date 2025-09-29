@@ -1,53 +1,74 @@
-import React , {useState} from 'react'
-import {useForm} from "react-hook-form"
-import {zodResolver} from "@hookform/resolvers/zod"
-import { Link } from 'react-router-dom'
-import {
-  Code,
-  Eye,
-  EyeOff,
-  Loader2,
-  Lock,
-  Mail,
-} from "lucide-react";
+import React, {useState} from "react";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {Link, useNavigate} from "react-router-dom";
+import {useGoogleLogin} from "@react-oauth/google";
+// import {googleAxiosInstance} from "../lib/axios.js";
+import {Code, Eye, EyeOff, Loader2, Lock, Mail} from "lucide-react";
 
 import {z} from "zod";
-import AuthImagePattern from '../components/AuthImagePattern';
-import { useAuthStore } from '../store/useAuthStore';
 
+import AuthImagePattern from "../components/AuthImagePattern";
+import {useAuthStore} from "../store/useAuthStore";
+import axios from "axios";
 
 const LoginSchema = z.object({
-  email:z.string().email("Enter a valid email"),
-  password:z.string().min(6 , "Password must be atleast of 6 characters"),
-
-})
+  email: z.string().email("Enter a valid email"),
+  password: z.string().min(6, "Password must be atleast of 6 characters"),
+});
 
 const LoginPage = () => {
+  const {isLoggingIn, login} = useAuthStore();
 
-  const {isLoggingIn , login} = useAuthStore()
-  const [showPassword , setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const responseGoogle = async (authResult) => {
+    try {
+      console.log(authResult.code);
+      const response = await axios.get(
+        `http://localhost:3000/api/v1/auth/google?code=${authResult.code}`
+      );
+      const googleUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${authResult.code}&redirect_uri=http://localhost:5173/login&response_type=code&scope=email%20profile&access_type=offline`;
+
+      console.log(response, "THeode");
+    } catch (error) {
+      console.error("Error", error);
+    }
+  };
+  const googleLogin = useGoogleLogin({
+    onSuccess: responseGoogle,
+    onError: responseGoogle,
+    flow: "auth-code",
+  });
 
   const {
-    register ,
+    register,
     handleSubmit,
-    formState:{errors},
+    formState: {errors},
   } = useForm({
-    resolver:zodResolver(LoginSchema)
-  })
+    resolver: zodResolver(LoginSchema),
+  });
 
-  const onSubmit = async (data)=>{
+  const onSubmit = async (data) => {
     try {
-      await login(data)
-      
+      await login(data);
     } catch (error) {
-      console.error("Login failed" , error)
+      console.error("Login failed", error);
     }
-  }
+  };
 
+  const handleGoogleLogin = async () => {
+    try {
+      await googleLogin();
+      // googleLogin();
+    } catch (error) {
+      console.error("Error", error);
+    }
+  };
 
   return (
-    <div className='h-screen grid lg:grid-cols-2'>
-        <div className="flex flex-col justify-center items-center p-6 sm:p-12">
+    <div className="h-screen grid lg:grid-cols-2">
+      <div className="flex flex-col justify-center items-center p-6 sm:p-12">
         <div className="w-full max-w-md space-y-8">
           {/* Logo */}
           <div className="text-center mb-8">
@@ -61,11 +82,10 @@ const LoginPage = () => {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            
-           
-          
-
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-6"
+          >
             {/* Email */}
             <div className="form-control">
               <label className="label">
@@ -85,7 +105,9 @@ const LoginPage = () => {
                 />
               </div>
               {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
@@ -119,7 +141,9 @@ const LoginPage = () => {
                 </button>
               </div>
               {errors.password && (
-                <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 
@@ -129,7 +153,7 @@ const LoginPage = () => {
               className="btn btn-primary w-full"
               disabled={isLoggingIn}
             >
-               {isLoggingIn ? (
+              {isLoggingIn ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
                   Loading...
@@ -140,11 +164,28 @@ const LoginPage = () => {
             </button>
           </form>
 
+          <button
+            onClick={() => handleGoogleLogin()}
+            className="btn btn-primary w-full"
+            // disabled={isLoggingIn}
+          >
+            {isLoggingIn ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Loading...
+              </>
+            ) : (
+              "Sign in with Google"
+            )}
+          </button>
           {/* Footer */}
           <div className="text-center">
             <p className="text-base-content/60">
               Don't have an account?{" "}
-              <Link to="/signup" className="link link-primary">
+              <Link
+                to="/signup"
+                className="link link-primary"
+              >
                 Sign up
               </Link>
             </p>
@@ -152,8 +193,8 @@ const LoginPage = () => {
         </div>
       </div>
 
-       {/* Right Side - Image/Pattern */}
-     {/* Right Side - Image/Pattern */}
+      {/* Right Side - Image/Pattern */}
+      {/* Right Side - Image/Pattern */}
       <AuthImagePattern
         title={"Welcome back!"}
         subtitle={
@@ -161,7 +202,7 @@ const LoginPage = () => {
         }
       />
     </div>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default LoginPage;

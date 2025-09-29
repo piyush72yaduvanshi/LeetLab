@@ -1,7 +1,7 @@
-import React from 'react'
-import { useForm, useFieldArray, Controller } from "react-hook-form";
+import React from "react";
+import {useForm, useFieldArray, Controller} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {z} from "zod"
+import {z} from "zod";
 import {
   Plus,
   Trash2,
@@ -13,8 +13,8 @@ import {
   Download,
 } from "lucide-react";
 import Editor from "@monaco-editor/react";
-import { useState } from 'react';
-import {axiosInstance} from "../lib/axios"
+import {useState} from "react";
+import {axisoInstance} from "../lib/axios";
 import toast from "react-hot-toast";
 import {useNavigate} from "react-router-dom";
 
@@ -62,7 +62,6 @@ const problemSchema = z.object({
     JAVA: z.string().min(1, "Java solution is required"),
   }),
 });
-
 
 const sampledpData = {
   title: "Climbing Stairs",
@@ -512,18 +511,23 @@ public class Main {
 };
 
 const CreateProblemForm = () => {
-    const [sampleType , setSampleType] = useState("DP")
-    const navigation = useNavigate();
-    const {register , control , handleSubmit , reset , formState:{errors}} = useForm(
-        {
-            resolver:zodResolver(problemSchema),
-            defaultValues:{
-                 testcases: [{ input: "", output: "" }],
+  const [sampleType, setSampleType] = useState("DP");
+  const navigation = useNavigate();
+  const {
+    register,
+    control,
+    handleSubmit,
+    reset,
+    formState: {errors},
+  } = useForm({
+    resolver: zodResolver(problemSchema),
+    defaultValues: {
+      testcases: [{input: "", output: ""}],
       tags: [""],
       examples: {
-        JAVASCRIPT: { input: "", output: "", explanation: "" },
-        PYTHON: { input: "", output: "", explanation: "" },
-        JAVA: { input: "", output: "", explanation: "" },
+        JAVASCRIPT: {input: "", output: "", explanation: ""},
+        PYTHON: {input: "", output: "", explanation: ""},
+        JAVA: {input: "", output: "", explanation: ""},
       },
       codeSnippets: {
         JAVASCRIPT: "function solution() {\n  // Write your code here\n}",
@@ -535,15 +539,14 @@ const CreateProblemForm = () => {
         PYTHON: "# Add your reference solution here",
         JAVA: "// Add your reference solution here",
       },
-            }
-        }
-    )
+    },
+  });
 
   const {
     fields: testCaseFields,
     append: appendTestCase,
     remove: removeTestCase,
-    replace: replacetestcases,
+    replace: replaceTestCases,
   } = useFieldArray({
     control,
     name: "testcases",
@@ -559,38 +562,36 @@ const CreateProblemForm = () => {
     name: "tags",
   });
 
-  const [isLoading , setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const onSubmit = async (value)=>{
-   try {
-    setIsLoading(true)
-    const res = await axiosInstance.post("/problems/create-problem" , value)
-    console.log(res.data);
-    toast.success(res.data.message || "Problem Created successfully⚡");
-    navigation("/");
-
-   } catch (error) {
-    console.log(error);
-    toast.error("Error creating problem")
-   }
-   finally{
+  const onSubmit = async (value) => {
+    try {
+      setIsLoading(true);
+      const res = await axisoInstance.post("/problems/create-problem", value);
+      console.log(res.data);
+      toast.success(res.data.message || "Problem Created successfully⚡");
+      navigation("/");
+    } catch (error) {
+      console.log(error);
+      toast.error("Error creating problem");
+    } finally {
       setIsLoading(false);
-   }
-  }
+    }
+  };
 
-  const loadSampleData=()=>{
-    const sampleData = sampleType === "DP" ? sampledpData : sampleStringProblem
-  
-   replaceTags(sampleData.tags.map((tag) => tag));
-    replacetestcases(sampleData.testcases.map((tc) => tc));
+  const loadSampleData = () => {
+    const sampleData = sampleType === "DP" ? sampledpData : sampleStringProblem;
 
-   // Reset the form with sample data
+    replaceTags(sampleData.tags.map((tag) => tag));
+    replaceTestCases(sampleData.testcases.map((tc) => tc));
+
+    // Reset the form with sample data
     reset(sampleData);
-}
+  };
 
   return (
-    <div className='container mx-auto py-8 px-4 max-w-7xl'>
-  <div className="card bg-base-100 shadow-xl">
+    <div className="container mx-auto py-8 px-4 max-w-7xl">
+      <div className="card bg-base-100 shadow-xl">
         <div className="card-body p-6 md:p-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 pb-4 border-b">
             <h2 className="card-title text-2xl md:text-3xl flex items-center gap-3">
@@ -630,7 +631,10 @@ const CreateProblemForm = () => {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-8"
+          >
             {/* Basic Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="form-control md:col-span-2">
@@ -715,7 +719,10 @@ const CreateProblemForm = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {tagFields.map((field, index) => (
-                  <div key={field.id} className="flex gap-2 items-center">
+                  <div
+                    key={field.id}
+                    className="flex gap-2 items-center"
+                  >
                     <input
                       type="text"
                       className="input input-bordered flex-1"
@@ -752,14 +759,17 @@ const CreateProblemForm = () => {
                 <button
                   type="button"
                   className="btn btn-primary btn-sm"
-                  onClick={() => appendTestCase({ input: "", output: "" })}
+                  onClick={() => appendTestCase({input: "", output: ""})}
                 >
                   <Plus className="w-4 h-4 mr-1" /> Add Test Case
                 </button>
               </div>
               <div className="space-y-6">
                 {testCaseFields.map((field, index) => (
-                  <div key={field.id} className="card bg-base-100 shadow-md">
+                  <div
+                    key={field.id}
+                    className="card bg-base-100 shadow-md"
+                  >
                     <div className="card-body p-4 md:p-6">
                       <div className="flex justify-between items-center mb-4">
                         <h4 className="text-base md:text-lg font-semibold">
@@ -850,7 +860,7 @@ const CreateProblemForm = () => {
                           <Controller
                             name={`codeSnippets.${language}`}
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                               <Editor
                                 height="300px"
                                 language={language.toLowerCase()}
@@ -858,7 +868,7 @@ const CreateProblemForm = () => {
                                 value={field.value}
                                 onChange={field.onChange}
                                 options={{
-                                  minimap: { enabled: false },
+                                  minimap: {enabled: false},
                                   fontSize: 14,
                                   lineNumbers: "on",
                                   roundedSelection: false,
@@ -890,7 +900,7 @@ const CreateProblemForm = () => {
                           <Controller
                             name={`referenceSolutions.${language}`}
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                               <Editor
                                 height="300px"
                                 language={language.toLowerCase()}
@@ -898,7 +908,7 @@ const CreateProblemForm = () => {
                                 value={field.value}
                                 onChange={field.onChange}
                                 options={{
-                                  minimap: { enabled: false },
+                                  minimap: {enabled: false},
                                   fontSize: 14,
                                   lineNumbers: "on",
                                   roundedSelection: false,
@@ -1036,7 +1046,10 @@ const CreateProblemForm = () => {
             </div>
 
             <div className="card-actions justify-end pt-4 border-t">
-              <button type="submit" className="btn btn-primary btn-lg gap-2">
+              <button
+                type="submit"
+                className="btn btn-primary btn-lg gap-2"
+              >
                 {isLoading ? (
                   <span className="loading loading-spinner text-white"></span>
                 ) : (
@@ -1051,7 +1064,7 @@ const CreateProblemForm = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CreateProblemForm
+export default CreateProblemForm;

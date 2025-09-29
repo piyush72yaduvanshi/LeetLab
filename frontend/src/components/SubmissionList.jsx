@@ -1,3 +1,4 @@
+import React from "react";
 import {
   CheckCircle2,
   XCircle,
@@ -6,8 +7,7 @@ import {
   Calendar,
 } from "lucide-react";
 
-const SubmissionsList = ({ submissions, isLoading }) => {
-  // Helper function to safely parse JSON strings
+const SubmissionList = ({submissions, isLoading}) => {
   const safeParse = (data) => {
     try {
       return JSON.parse(data);
@@ -81,7 +81,9 @@ const SubmissionsList = ({ submissions, isLoading }) => {
                       <span className="font-semibold">{submission.status}</span>
                     </div>
                   )}
-                  <div className="badge badge-neutral">{submission.language}</div>
+                  <div className="badge badge-neutral">
+                    {submission.language}
+                  </div>
                 </div>
 
                 {/* Right Section: Runtime, Memory, and Date */}
@@ -110,4 +112,4 @@ const SubmissionsList = ({ submissions, isLoading }) => {
   );
 };
 
-export default SubmissionsList;
+export default SubmissionList;

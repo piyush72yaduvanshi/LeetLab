@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import Editor from "@monaco-editor/react";
 import {
   Play,
@@ -16,17 +16,17 @@ import {
   ThumbsUp,
   Home,
 } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
-import { useProblemStore } from "../store/useProblemStore.js";
-import { getLanguageId } from "../lib/lang";
-import { useExecutionStore } from "../store/useExecutionStore.js";
-import { useSubmissionStore } from "../store/useSubmissionStore.js";
+import {Link, useParams} from "react-router-dom";
+import {useProblemStore} from "../store/useProblemStore";
+import {getLanguageId} from "../lib/lang";
+import {useExecutionStore} from "../store/useExecutionStore";
+import {useSubmissionStore} from "../store/useSubmissionStore";
 import Submission from "../components/Submission";
 import SubmissionsList from "../components/SubmissionList";
 
 const ProblemPage = () => {
-  const { id } = useParams();
-  const { getProblemById, problem, isProblemLoading } = useProblemStore();
+  const {id} = useParams();
+  const {getProblemById, problem, isProblemLoading} = useProblemStore();
 
   const {
     submission: submissions,
@@ -42,7 +42,7 @@ const ProblemPage = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [testcases, setTestCases] = useState([]);
 
-  const { executeCode, submission, isExecuting } = useExecutionStore();
+  const {executeCode, submission, isExecuting} = useExecutionStore();
 
   useEffect(() => {
     getProblemById(id);
@@ -198,7 +198,10 @@ const ProblemPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-base-300 to-base-200 max-w-7xl w-full">
       <nav className="navbar bg-base-100 shadow-lg px-4">
         <div className="flex-1 gap-2">
-          <Link to={"/"} className="flex items-center gap-2 text-primary">
+          <Link
+            to={"/"}
+            className="flex items-center gap-2 text-primary"
+          >
             <Home className="w-6 h-6" />
             <ChevronRight className="w-4 h-4" />
           </Link>
@@ -241,7 +244,10 @@ const ProblemPage = () => {
             onChange={handleLanguageChange}
           >
             {Object.keys(problem.codeSnippets || {}).map((lang) => (
-              <option key={lang} value={lang}>
+              <option
+                key={lang}
+                value={lang}
+              >
                 {lang.charAt(0).toUpperCase() + lang.slice(1)}
               </option>
             ))}
@@ -313,7 +319,7 @@ const ProblemPage = () => {
                   value={code}
                   onChange={(value) => setCode(value || "")}
                   options={{
-                    minimap: { enabled: false },
+                    minimap: {enabled: false},
                     fontSize: 20,
                     lineNumbers: "on",
                     roundedSelection: false,

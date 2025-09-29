@@ -1,6 +1,6 @@
-import { create } from "zustand";
+import {create} from "zustand";
+import {axisoInstance} from "../lib/axios";
 import toast from "react-hot-toast";
-import { axiosInstance } from "../lib/axios";
 
 export const useExecutionStore = create((set) => ({
   isExecuting: false,
@@ -14,8 +14,8 @@ export const useExecutionStore = create((set) => ({
     problemId
   ) => {
     try {
-      set({ isExecuting: true });
-      const response = await axiosInstance.post("/execute-code", {
+      set({isExecuting: true});
+      const response = await axisoInstance.post("/execute-code", {
         source_code,
         language_id,
         stdin,
@@ -23,13 +23,13 @@ export const useExecutionStore = create((set) => ({
         problemId,
       });
 
-      set({ submission: response.data.submission });
+      set({submission: response.data.submission});
       toast.success("Code executed successfully");
     } catch (error) {
       console.error("Error executing code:", error);
       toast.error("Failed to execute code");
     } finally {
-      set({ isExecuting: false });
+      set({isExecuting: false});
     }
   },
 }));

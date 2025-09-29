@@ -1,53 +1,41 @@
-import React , {useState} from 'react'
-import {useForm} from "react-hook-form"
-import {zodResolver} from "@hookform/resolvers/zod"
-import { Link } from 'react-router-dom'
-import {
-  Code,
-  Eye,
-  EyeOff,
-  Loader2,
-  Lock,
-  Mail,
-} from "lucide-react";
+import React, {useState} from "react";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {Link} from "react-router-dom";
+import {Code, Eye, EyeOff, Loader2, Lock, Mail} from "lucide-react";
+import AuthImagePattern from "../components/AuthImagePattern";
 
 import {z} from "zod";
-import AuthImagePattern from '../components/AuthImagePattern';
-import { useAuthStore } from "../store/useAuthStore";
-
-const SignUpSchema = z.object({
-  email:z.string().email("Enter a valid email"),
-  password:z.string().min(6 , "Password must be atleast of 6 characters"),
-  name:z.string().min(3 , "Name must be atleast 3 character")
-})
+import {useAuthStore} from "../store/useAuthStore";
+const signUpSchema = z.object({
+  email: z.string().email("Enter your email."),
+  password: z.string().min(5, "Password must be atlease 5 character long"),
+  name: z.string().min(3, "Name must be atleast 3 characteer"),
+});
 
 const SignUpPage = () => {
+  const [showPassword, setShowPassword] = useState(false);
 
-  const [showPassword , setShowPassword] = useState(false);
-
-  const {signup , isSigninUp} = useAuthStore()
-
+  const {signup, isSigninUp} = useAuthStore();
   const {
     register,
     handleSubmit,
-    formState:{errors},
+    formState: {errors},
   } = useForm({
-    resolver:zodResolver(SignUpSchema)
-  })
+    resolver: zodResolver(signUpSchema),
+  });
 
-  const onSubmit = async (data)=>{
-   try {
-    await signup(data)
-    console.log("signup data" , data)
-   } catch (error) {
-     console.error("SignUp failed:", error);
-   }
-  }
-
-
+  const onSubmit = async (data) => {
+    try {
+      await signup(data);
+      console.log("signup data", data);
+    } catch (error) {
+      console.error("SignUp failed:", errors);
+    }
+  };
   return (
-    <div className='h-screen grid lg:grid-cols-2'>
-        <div className="flex flex-col justify-center items-center p-6 sm:p-12">
+    <div className="h-screen grid lg:grid-cols-2">
+      <div className="flex flex-col justify-center items-center p-6 sm:p-12">
         <div className="w-full max-w-md space-y-8">
           {/* Logo */}
           <div className="text-center mb-8">
@@ -61,8 +49,10 @@ const SignUpPage = () => {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-6"
+          >
             {/* name */}
             <div className="form-control">
               <label className="label">
@@ -82,8 +72,10 @@ const SignUpPage = () => {
                 />
               </div>
               {errors.name && (
-                <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-              )}              
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.name.message}
+                </p>
+              )}
             </div>
 
             {/* Email */}
@@ -105,7 +97,9 @@ const SignUpPage = () => {
                 />
               </div>
               {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
@@ -139,7 +133,9 @@ const SignUpPage = () => {
                 </button>
               </div>
               {errors.password && (
-                <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 
@@ -147,15 +143,15 @@ const SignUpPage = () => {
             <button
               type="submit"
               className="btn btn-primary w-full"
-             disabled={isSigninUp}
+              disabled={isSigninUp}
             >
-               {isSigninUp ? (
+              {isSigninUp ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
                   Loading...
                 </>
               ) : (
-                "Sign Up"
+                "Sign in"
               )}
             </button>
           </form>
@@ -164,7 +160,10 @@ const SignUpPage = () => {
           <div className="text-center">
             <p className="text-base-content/60">
               Already have an account?{" "}
-              <Link to="/login" className="link link-primary">
+              <Link
+                to="/login"
+                className="link link-primary"
+              >
                 Sign in
               </Link>
             </p>
@@ -172,7 +171,7 @@ const SignUpPage = () => {
         </div>
       </div>
 
-       {/* Right Side - Image/Pattern */}
+      {/* Right Side - Image/Pattern */}
       <AuthImagePattern
         title={"Welcome to our platform!"}
         subtitle={
@@ -180,7 +179,7 @@ const SignUpPage = () => {
         }
       />
     </div>
-  )
-}
+  );
+};
 
-export default SignUpPage
+export default SignUpPage;

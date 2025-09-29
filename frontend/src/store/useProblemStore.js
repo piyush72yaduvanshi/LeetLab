@@ -1,6 +1,6 @@
-import { create } from "zustand";
-import { axiosInstance } from "../lib/axios";
-import { toast } from "react-hot-toast";
+import {create} from "zustand";
+import {toast} from "react-hot-toast";
+import {axisoInstance} from "../../src/lib/axios.js";
 
 export const useProblemStore = create((set) => ({
   problems: [],
@@ -11,47 +11,38 @@ export const useProblemStore = create((set) => ({
 
   getAllProblems: async () => {
     try {
-      set({ isProblemsLoading: true });
+      set({isProblemsLoading: true});
 
-      const res = await axiosInstance.get("/problems/get-all-problems");
-
-      set({ problems: res.data.problems });
+      const res = await axisoInstance.get("/problems/get-all-problems");
+      console.log(res.data.problems, "myres");
+      set({problems: res.data.problems});
     } catch (error) {
       console.log("Error getting all problems", error);
-      toast.error("Error in getting problems");
+      toast.error("Error getting all problems");
     } finally {
-      set({ isProblemsLoading: false });
+      set({isProblemsLoading: false});
     }
   },
 
   getProblemById: async (id) => {
     try {
-      set({ isProblemLoading: true });
-
-      const res = await axiosInstance.get(`/problems/get-problem/${id}`);
-
-      set({ problem: res.data.problem });
-
+      const res = await axisoInstance.get(`/problems/get-problem/${id}`);
+      set({problem: res.data.problem});
       toast.success(res.data.message);
     } catch (error) {
       console.log("Error getting all problems", error);
-      toast.error("Error in getting problems");
-    } finally {
-      set({ isProblemLoading: false });
+      toast.error;
     }
   },
 
   getSolvedProblemByUser: async () => {
     try {
-      set({ isProblemLoading: true });
-      const res = await axiosInstance.get("/problems/get-solved-problem");
+      const res = await axisoInstance.get("/problems/get-solved-problem");
 
-      set({ solvedProblems: res.data.problems });
+      set({solvedProblems: res.data.problems});
     } catch (error) {
       console.log("Error getting solved problems", error);
       toast.error("Error getting solved problems");
-    } finally {
-      set({ isProblemLoading: false });
     }
   },
 }));

@@ -1,19 +1,25 @@
-import React, { useState, useMemo } from "react";
-import { useAuthStore } from "../store/useAuthStore";
-import { Link } from "react-router-dom";
-import { Bookmark, PencilIcon, Trash, TrashIcon, Plus } from "lucide-react";
+import React, {useState, useMemo} from "react";
+import {useAuthStore} from "../store/useAuthStore";
+import {Link} from "react-router-dom";
+import {Bookmark, PencilIcon, Trash, TrashIcon, Plus} from "lucide-react";
+import {useActions} from "../store/useAction";
+import AddToPlaylistModal from "./AddToPlaylist";
+import CreatePlaylistModal from "./CreatePlaylistModal";
+import {useProblemStore} from "../store/useProblemStore";
+import {usePlaylistStore} from "../store/usePlaylistStore";
 
-
-
-const ProblemsTable = ({ problems }) => {
-  const { authUser } = useAuthStore();
-
+const ProblemsTable = ({problems}) => {
+  const {getAllProblems} = useProblemStore();
+  const {authUser} = useAuthStore();
+  const {onDeleteProblem} = useActions();
+  const {createPlaylist} = usePlaylistStore();
   const [search, setSearch] = useState("");
   const [difficulty, setDifficulty] = useState("ALL");
   const [selectedTag, setSelectedTag] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] = useState(false);
+  const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] =
+    useState(false);
   const [selectedProblemId, setSelectedProblemId] = useState(null);
 
   // Extract all unique tags from problems
@@ -51,8 +57,9 @@ const ProblemsTable = ({ problems }) => {
     );
   }, [filteredProblems, currentPage]);
 
-  const handleDelete = (id) => {
-    onDeleteProblem(id);
+  const handleDelete = async (id) => {
+    await onDeleteProblem(id);
+    await getAllProblems();
   };
 
   const handleCreatePlaylist = async (data) => {
@@ -94,7 +101,10 @@ const ProblemsTable = ({ problems }) => {
         >
           <option value="ALL">All Difficulties</option>
           {difficulties.map((diff) => (
-            <option key={diff} value={diff}>
+            <option
+              key={diff}
+              value={diff}
+            >
               {diff.charAt(0).toUpperCase() + diff.slice(1).toLowerCase()}
             </option>
           ))}
@@ -106,7 +116,10 @@ const ProblemsTable = ({ problems }) => {
         >
           <option value="ALL">All Tags</option>
           {allTags.map((tag) => (
-            <option key={tag} value={tag}>
+            <option
+              key={tag}
+              value={tag}
+            >
               {tag}
             </option>
           ))}
@@ -128,9 +141,10 @@ const ProblemsTable = ({ problems }) => {
           <tbody>
             {paginatedProblems.length > 0 ? (
               paginatedProblems.map((problem) => {
-                const isSolved = problem.solvedBy.some(
+                const isSolved = problem.solvedBy?.some(
                   (user) => user.userId === authUser?.id
                 );
+                // const isSolved = problem.userId === authUser ? true : false;
                 return (
                   <tr key={problem.id}>
                     <td>
@@ -142,7 +156,10 @@ const ProblemsTable = ({ problems }) => {
                       />
                     </td>
                     <td>
-                      <Link to={`/problem/${problem.id}`} className="font-semibold hover:underline">
+                      <Link
+                        to={`/problem/${problem.id}`}
+                        className="font-semibold hover:underline"
+                      >
                         {problem.title}
                       </Link>
                     </td>
@@ -181,7 +198,10 @@ const ProblemsTable = ({ problems }) => {
                             >
                               <TrashIcon className="w-4 h-4 text-white" />
                             </button>
-                            <button disabled className="btn btn-sm btn-warning">
+                            <button
+                              disabled
+                              className="btn btn-sm btn-warning"
+                            >
                               <PencilIcon className="w-4 h-4 text-white" />
                             </button>
                           </div>
@@ -191,7 +211,9 @@ const ProblemsTable = ({ problems }) => {
                           onClick={() => handleAddToPlaylist(problem.id)}
                         >
                           <Bookmark className="w-4 h-4" />
-                          <span className="hidden sm:inline">Save to Playlist</span>
+                          <span className="hidden sm:inline">
+                            Save to Playlist
+                          </span>
                         </button>
                       </div>
                     </td>
@@ -200,7 +222,10 @@ const ProblemsTable = ({ problems }) => {
               })
             ) : (
               <tr>
-                <td colSpan={5} className="text-center py-6 text-gray-500">
+                <td
+                  colSpan={5}
+                  className="text-center py-6 text-gray-500"
+                >
                   No problems found.
                 </td>
               </tr>
@@ -230,7 +255,18 @@ const ProblemsTable = ({ problems }) => {
         </button>
       </div>
 
+      {/* Modals */}
+      <CreatePlaylistModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreatePlaylist}
+      />
 
+      <AddToPlaylistModal
+        isOpen={isAddToPlaylistModalOpen}
+        onClose={() => setIsAddToPlaylistModalOpen(false)}
+        problemId={selectedProblemId}
+      />
     </div>
   );
 };
